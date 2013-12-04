@@ -14,15 +14,15 @@ KILO_SIZE = 1024.0
 # Return the file size with a readable style.
 def readable_file_size(size, precision)
   case
-  when size == 1 
+  when size == 1
     "1 Byte"
-  when size < KILO_SIZE 
+  when size < KILO_SIZE
     "%d Bytes" % size
-  when size < MEGA_SIZE 
+  when size < MEGA_SIZE
     "%.#{precision}f KB" % (size / KILO_SIZE)
-  when size < GIGA_SIZE 
+  when size < GIGA_SIZE
     "%.#{precision}f MB" % (size / MEGA_SIZE)
-  else 
+  else
     "%.#{precision}f GB" % (size / GIGA_SIZE)
   end
 end
@@ -163,9 +163,12 @@ class DropboxClient
     file_path = File.join(DummyDropbox::root_path, to_path)
     dir_path = File.dirname(file_path)
     FileUtils.mkdir_p(dir_path)
-    # FileUtils.copy_file(file_obj.path, File.join(DummyDropbox::root_path, to_path))
-    File.open(file_path, "w") do |f|
-      f.write(file_obj)
+    File.open(file_path, "wb") do |f|
+      if file_obj.is_a?(File)
+        f.write(file_obj.read)
+      else
+        f.write(file_obj)
+      end
     end
 
     return self.metadata(to_path)
